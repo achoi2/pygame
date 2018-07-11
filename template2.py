@@ -16,12 +16,18 @@ def main():
     hero_acc = 0.5
     hero_fric = -0.12
     hero_grav = 0.8
+    pic = pygame.image.load
 
     class Hero(pygame.sprite.Sprite):
-        def __init__(self):
+        def __init__(self, platforms):
             pygame.sprite.Sprite.__init__(self)
             self.platforms = platforms
-            self.image = pygame.image.load('images/cat.png')
+            self.walking = False
+            self.jumping = False
+            self.current_frame = 0
+            self.last_update = 0
+            self.load_images()
+            self.image = self.standing_frames[0]
             self.image = pygame.transform.scale(self.image, (100, 100))
             self.rect = self.image.get_rect()
             self.rect.center = (width / 2, height / 2)
@@ -29,8 +35,15 @@ def main():
             self.vel = vec(0, 0)
             self.acc = vec(0, 0)
 
+        def load_images(self):
+            self.standing_frames = [pic('images/cat.png')]
+
         def jump(self):
-            self.vel.y = -20
+            self.rect.x += 1 
+            hits = pygame.sprite.spritecollide(self, self.platforms, False)
+            self.rect.x -= 1
+            if hits:
+                self.vel.y = -20
 
         def update(self):
             self.acc = vec(0, hero_grav)
@@ -92,7 +105,7 @@ def main():
     platforms = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
     p1 = Platform(0, height, width, 0)
-    hero = Hero()    
+    hero = Hero(platforms)    
     all_sprites.add(hero)
     all_sprites.add(p1)
     platforms.add(p1)
