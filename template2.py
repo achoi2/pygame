@@ -27,7 +27,7 @@ def main():
             self.current_frame = 0
             self.last_update = 0
             self.load_images()
-            self.image = self.standing_frames[0]
+            self.image = self.jump_frame[1]
             self.image = pygame.transform.scale(self.image, (100, 100))
             self.rect = self.image.get_rect()
             self.rect.center = (width / 2, height / 2)
@@ -36,7 +36,13 @@ def main():
             self.acc = vec(0, 0)
 
         def load_images(self):
-            self.standing_frames = [pic('images/cat.png')]
+            #may need to resize later
+            # self.standing_frames = [pic('images/idle1.png'), pic('images/idle2.png')]
+            # self.walk_frames_r = [pic('images/walk1.png'), pic('images/walk2.png')]
+            # self.walk_frames_l = []
+            # for frame in self.walk_frames_r:
+            #     self.walk_frames_l.append(pygame.transform.flip(frame, True, False))
+            self.jump_frame = [pic('images/jump1.png'), pic('images/jump2.png')]
 
         def jump(self):
             self.rect.x += 1 
@@ -46,6 +52,7 @@ def main():
                 self.vel.y = -20
 
         def update(self):
+            # self.animate()
             self.acc = vec(0, hero_grav)
             keys = pygame.key.get_pressed()   
             if keys[pygame.K_LEFT]:
@@ -63,6 +70,30 @@ def main():
                 self.pos.x = width
 
             self.rect.midbottom = self.pos
+        
+        # def animate(self):
+        #     now = pygame.time.get_ticks()
+        #     if self.vel.x != 0:
+        #         self.walking = True
+        #     else:
+        #         self.walking = False
+        #     #walk animation
+        #     if self.walking:
+        #         if now - self.last_update > 200:
+        #             self.last_update = now
+        #             self.current_frame = (self.current_frame + 1) % len(self.walk_frames_l)
+        #             if self.vel.x > 0:
+        #                 self.image = self.walk_frames_r[self.current_frame]
+        #             else:
+        #                 self.image = self.walk_frams_1[self.current_frame]
+        #     #idle animation
+        #     if not self.jumping and not self.walking:
+        #         if now - self.last_update > 350:
+        #             self.last_update = now
+        #             self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+        #             self.image = self.standing_frames[self.current_frame]
+        #             self.image = pygame.transform.scale(self.image, (100, 100))
+                
 
     class Mob(pygame.sprite.Sprite):
         def __init__(self):
