@@ -5,8 +5,8 @@ import math
 
 
 def main():
-    width = 500
-    height = 500
+    width = 700
+    height = 700
     FPS = 30
     vec = pygame.math.Vector2
     
@@ -14,9 +14,19 @@ def main():
     black_color = (0, 0, 0)
 
     hero_acc = 0.5
-    hero_fric = -0.12
+    hero_fric = -0.10
     hero_grav = 0.8
     pic = pygame.image.load
+
+    
+
+    font_name = pygame.font.match_font('Times New Roman')
+    def draw_text(surf, text, size, x, y):
+        font = pygame.font.Font(font_name, size)
+        text_surface = font.render(text, True, black_color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
+        surf.blit(text_surface, text_rect)
 
     class Hero(pygame.sprite.Sprite):
         def __init__(self, platforms):
@@ -29,6 +39,7 @@ def main():
             self.load_images()
             self.image = self.walk_frames_r[0] 
             self.image = pygame.transform.scale(self.image, (100, 100))
+            self.radius = 45
             self.rect = self.image.get_rect()
             self.rect.center = (width / 2, height / 2)
             self.pos = vec(width / 2, height / 2)
@@ -100,11 +111,13 @@ def main():
         def __init__(self):
             pygame.sprite.Sprite.__init__(self)
             self.image = pygame.image.load('images/fish.png')
-            self.image = pygame.transform.scale(self.image, (50, 50))
+            self.image = pygame.transform.scale(self.image, (40, 40))
+            self.radius = 15
             self.rect = self.image.get_rect()
             self.rect.x = random.randrange(width - self.rect.width)
             self.rect.y = random.randrange(-100, -10)
             self.speedy = random.randrange(2, 8)
+            
             
 
         def update(self):          
@@ -114,6 +127,12 @@ def main():
                 self.rect.x = random.randrange(width - self.rect.width)
                 self.rect.y = random.randrange(-100, -40)
                 self.speedy = random.randrange(1, 8)
+
+    class Shield(Mob):
+        def __ini__(self):
+            pygame.sprite.Sprite.__init__(self)
+            self.image
+
         
     class Platform(pygame.sprite.Sprite):
         def __init__(self, x, y, w, h):
@@ -143,11 +162,12 @@ def main():
     all_sprites.add(hero)
     all_sprites.add(p1)
     platforms.add(p1)
-    for i in range(8):
+    for i in range(10):
         m = Mob()
         all_sprites.add(m)
         mobs.add(m)
  
+   
     # game loop
     running = True
     while running:
@@ -165,9 +185,9 @@ def main():
         all_sprites.update()
         
         #collision
-        # hits = pygame.sprite.spritecollide(hero, mobs, False)
-        # if hits:
-        #     running = False
+        hits = pygame.sprite.spritecollide(hero, mobs, False, pygame.sprite.collide_circle)
+        if hits:
+            running = False
 
         p_hits = pygame.sprite.spritecollide(hero, platforms, False)
         if p_hits:
@@ -178,6 +198,7 @@ def main():
         screen.fill(blue_color)
         screen.blit(background, background_rect)
         all_sprites.draw(screen)
+        draw_text(screen, str(pygame.time.get_ticks() / 1000), 30, width / 2, 10)
         # after drawing everything
         pygame.display.flip()
     pygame.quit()
