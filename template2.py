@@ -23,7 +23,7 @@ def main():
     font_name = pygame.font.match_font('Times New Roman')
     def draw_text(surf, text, size, x, y):
         font = pygame.font.Font(font_name, size)
-        text_surface = font.render(text, True, black_color)
+        text_surface = font.render(text, True, blue_color)
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         surf.blit(text_surface, text_rect)
@@ -143,34 +143,51 @@ def main():
             self.rect.x = x
             self.rect.y = y                         
     
-    
+    def show_gameover_screen():
+        draw_text(screen, 'Jumpy Cat', 100, width / 2, height / 4)
+        draw_text(screen, 'Arrow keys, to move, Space to jump', 50, width / 2, height / 2)
+        draw_text(screen, 'Press a key to start', 40, width / 2, height * 3 / 4)
+        pygame.display.flip()
+        waiting = True
+        while waiting:
+            clock.tick(FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.KEYUP:
+                    waiting = False
+
     # initialize and create window 
     pygame.init()
     screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption('Cat')
+    pygame.display.set_caption('Jumpy Cat')
     clock = pygame.time.Clock()
 
     background = pygame.image.load('images/snow.jpg')
     background = pygame.transform.scale(background, (height, width))
     background_rect = background.get_rect()
     
-    all_sprites = pygame.sprite.Group()
-    platforms = pygame.sprite.Group()
-    mobs = pygame.sprite.Group()
-    p1 = Platform(0, height, width, 0)
-    hero = Hero(platforms)    
-    all_sprites.add(hero)
-    all_sprites.add(p1)
-    platforms.add(p1)
-    for i in range(10):
-        m = Mob()
-        all_sprites.add(m)
-        mobs.add(m)
- 
-   
+       
     # game loop
+    game_over = True
     running = True
     while running:
+        if game_over:
+            show_gameover_screen()
+            game_over = False
+            all_sprites = pygame.sprite.Group()
+            platforms = pygame.sprite.Group()
+            mobs = pygame.sprite.Group()
+            p1 = Platform(0, height, width, 0)
+            hero = Hero(platforms)    
+            all_sprites.add(hero)
+            all_sprites.add(p1)
+            platforms.add(p1)
+            for i in range(10):
+                m = Mob()
+                all_sprites.add(m)
+                mobs.add(m)
+
         clock.tick(FPS)
         # events
         for event in pygame.event.get():
@@ -187,7 +204,7 @@ def main():
         #collision
         hits = pygame.sprite.spritecollide(hero, mobs, False, pygame.sprite.collide_circle)
         if hits:
-            running = False
+            game_over = True
 
         p_hits = pygame.sprite.spritecollide(hero, platforms, False)
         if p_hits:
